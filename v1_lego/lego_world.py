@@ -241,8 +241,10 @@ if __name__ == '__main__':
     blocks = [gen_block() for _ in range(4)]
     pred = Pred.sample()
     print (pred)
-    print (pred(random_program(blocks)))
-    stacked_blocks = sample_good_program(blocks, pred, 100)
-    render_placed_blocks(stacked_blocks)
-    print (pred(stacked_blocks))
+    render_placed_blocks(random_drop_blocks(blocks), "pieces")
+
+    # print (pred(random_program(blocks)))
+    # stacked_blocks = sample_good_program(blocks, pred, 100)
+    # render_placed_blocks(stacked_blocks)
+    # print (pred(stacked_blocks))
 
