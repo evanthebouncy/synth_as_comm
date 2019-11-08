@@ -188,8 +188,9 @@ def sat_description_rel(rel_spec, dots):
 # up to 2 descriptions of absolute locations
 # up to 2 descriptions of relative locations
 def S0(prog):
-    return [gen_description_loc(prog) for _ in range(2)],\
-           [gen_description_rel(prog) for _ in range(2)]
+    loc_spec = list(sorted([gen_description_loc(prog) for _ in range(2)]))
+    rel_spec = list(sorted([gen_description_rel(prog) for _ in range(2)]))
+    return loc_spec, rel_spec
 
 # the literal listener L0
 # generate any program that satisfies the spec
@@ -226,3 +227,10 @@ if __name__ == '__main__':
     rec_prog = L0((loc_spec, rel_spec))
     print ("recovered prog ", rec_prog)
     render_dots(rec_prog, "recovered_prog")
+
+    all_us = PS0(prog)
+    print (len(all_us))
+    print (all_us[0])
+
+    all_ws = PL0((loc_spec, rel_spec))
+    print (len(all_ws))
