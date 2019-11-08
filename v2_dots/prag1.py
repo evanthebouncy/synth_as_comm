@@ -18,7 +18,7 @@ def load_S0_L0_from_cache():
             return ret
 
     # give the set of all consistent utterances from prog
-    def PS0(prog, sample_limit=3600):
+    def PS0(prog, sample_limit=3600, force_add=None):
         prog = repr(prog)
         pred_loc = prog_to_loc[prog]
         pred_rel = prog_to_rel[prog]
@@ -37,7 +37,13 @@ def load_S0_L0_from_cache():
                 a2 = random.choice(pred_rel)
                 a3 = random.choice(pred_rel)
                 everything.append([a0, a1, a2, a3])
-        return [((eval(a[0]),eval(a[1])) , (eval(a[2]),eval(a[3]))) for a in everything]
+
+        ret = [((eval(a[0]),eval(a[1])) , (eval(a[2]),eval(a[3]))) for a in everything]
+
+        if force_add is not None and force_add not in ret:
+            ret.append(force_add)
+        return ret
+
 
     def PL0(spec):
         loc_specs, rel_specs = spec
@@ -91,8 +97,8 @@ def get_cache():
             print ("finished dumping")
 
 # build PS1 from PS0 and PL0
-def PS1(prog, PS0, PL0):
-    legal_specs = PS0(prog)
+def PS1(prog, PS0, PL0, force_add = None):
+    legal_specs = PS0(prog, force_add = force_add)
     weights = []
     
     for spec in legal_specs:
@@ -109,7 +115,7 @@ def PL1(spec, PS0, PL0):
     weights = []
 
     for prog in legal_progs:
-        s1_u, s1_w = PS1(prog, PS0, PL0)
+        s1_u, s1_w = PS1(prog, PS0, PL0, force_add = spec)
         if spec not in s1_u:
             weights.append(0)
         else:
@@ -129,13 +135,19 @@ if __name__ == '__main__':
     prog = gen_prog()
 
     render_dots(prog, "orig_prog")
-    specs, weights = PS1(prog, PS0, PL0)
 
+    rand_spec = random.choice(PS0(prog))
+    print ("random spec ", rand_spec)
+    s0l0_prog = random.choice(PL0(rand_spec))
+    render_dots(s0l0_prog, "S0L0_prog")
+
+    specs, weights = PS1(prog, PS0, PL0)
     best_spec = specs[np.argmax(weights)]
-    
-    print (best_spec)
+    print ("best PS1 spec ", best_spec)
 
     recovered_progs, prog_weights = PL1(best_spec, PS0, PL0)
     best_prog = recovered_progs[np.argmax(prog_weights)]
     print (best_prog)
+
+    render_dots(best_prog, "S1L1_prog")
 
