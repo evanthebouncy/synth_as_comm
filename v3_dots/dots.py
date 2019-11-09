@@ -11,9 +11,7 @@ DD1 = ['any', 'Center', 'Corner', 'Edge']
 DD2 = ['any', 'Bot', 'Top']
 DD3 = ['any', 'Left', 'Right']
 
-REL = ['any_rel', 'Adj', 'Near', 'Far']
-REL_Q = QQ
-REL_C = ['RB', 'B', 'R']
+REL = ['any', 'Adj', 'Near', 'Far']
 
 # ============================ PROGRAMS ==============================
 def flip():
@@ -31,9 +29,17 @@ def gen_prog():
     r2 = None if flip() else random_loc()
 
     placed_dots = [dot for dot in [b1, b2, r1, r2] if dot is not None]
+    # if program too short redraw
     if len(set(placed_dots)) < len(placed_dots) or len(placed_dots) <= 1:
         return gen_prog()
-    return [('B', b1), ('B', b2), ('R', r1), ('R', r2)]
+    # knock out annoying symmetries in placements
+    if r1 is not None and r2 is not None and r1 > r2:
+        return gen_prog()
+    if b1 is not None and b2 is not None and b1 > b2:
+        return gen_prog()
+    ret = [('B', b1), ('B', b2), ('R', r1), ('R', r2)]
+    ret = [r for r in ret if r[1] is not None]
+    return ret
 
 def render_dots(dots, name='dots'):
     R = 0.1
@@ -96,16 +102,6 @@ def gen_description_loc(dots):
     quantity = random.choice([str(n_num), 'some' if n_num < len(dots_to_describe) else 'all'])
     return (quantity,) + unify_descriptions(sub_descriptions)
 
-# super hack
-# get EVERY legal description of loc kind by just hardcore sampling a lot
-# see if it sat . . . 
-def sat_description_loc(loc_spec, dots):
-    str_loc_spec = str(loc_spec)
-    for i in range(200):
-        if str(gen_description_loc(dots)) == str_loc_spec:
-            return True
-    return False
-
 def get_rel(dot1, dot2):
     x1,y1 = dot1[1]
     x2,y2 = dot2[1]
@@ -123,13 +119,13 @@ def unify_descriptions_rel(set1, set2, rel):
         if len(colors) == 1:
             return (quantity, colors[0])
         else:
-            return (quantity, 'RB')
+            return (quantity, 'any')
 
     def unify_rel(rel):
         if len(set(rel)) == 1:
             return rel[0]
         else:
-            return 'any_rel'
+            return 'any'
 
     return (unify_rel(rel), unify_set(set1), unify_set(set2))
 
@@ -157,16 +153,6 @@ def gen_description_rel(dots):
             rels.append(get_rel(d1, d2))
     return unify_descriptions_rel(set1, set2, rels)
 
-# super hack
-# get EVERY legal description of rel kind by just hardcore sampling a lot
-# see if it sat . . . 
-def sat_description_rel(rel_spec, dots):
-    str_rel_spec = str(rel_spec)
-    for i in range(200):
-        if str(gen_description_rel(dots)) == str_rel_spec:
-            return True
-    return False
-
 # the literal speaker S0
 # up to 2 descriptions of absolute locations
 # up to 2 descriptions of relative locations
@@ -174,26 +160,6 @@ def S0(prog):
     loc_spec = list(sorted([gen_description_loc(prog) for _ in range(2)]))
     rel_spec = list(sorted([gen_description_rel(prog) for _ in range(2)]))
     return loc_spec, rel_spec
-
-# the literal listener L0
-# generate any program that satisfies the spec
-def L0(spec):
-    def sat(prog):
-        loc_specs, rel_specs = spec
-        for loc_spec in loc_specs:
-            if not sat_description_loc(loc_spec, prog):
-                return False
-        for rel_spec in rel_specs:
-            if not sat_description_rel(rel_spec, prog):
-                return False
-        return True
-
-    for i in range(10000000):
-        prog = gen_prog()
-        if sat(prog):
-            return prog
-
-    assert 0, 'failed'
         
 if __name__ == '__main__':
     prog = gen_prog()
@@ -204,14 +170,8 @@ if __name__ == '__main__':
     for spec_line in rel_spec:
         print (spec_line)
 
-    print ("orig prog ", prog)
-    rec_prog = L0((loc_spec, rel_spec))
-    print ("recovered prog ", rec_prog)
-    render_dots(rec_prog, "recovered_prog")
+    # print ("orig prog ", prog)
+    # rec_prog = L0((loc_spec, rel_spec))
+    # print ("recovered prog ", rec_prog)
+    # render_dots(rec_prog, "recovered_prog")
 
-    all_us = PS0(prog)
-    print (len(all_us))
-    print (all_us[0])
-
-    all_ws = PL0((loc_spec, rel_spec))
-    print (len(all_ws))

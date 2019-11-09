@@ -29,6 +29,16 @@ def load_S0_L0_from_cache():
                     ret.append([f] + r)
             return ret
 
+    def cross(a,b,c,d):
+        ret = []
+        for i, aa in enumerate(a):
+            for j, bb in enumerate(b):
+                for k, cc in enumerate(c):
+                    for l, dd in enumerate(d):
+                        if i <= j and k <= l:
+                            ret.append((aa,bb,cc,dd))
+        return ret
+
     # give the set of all consistent utterances from prog
     def PS0(prog, sample_limit=3600, force_add=None):
         prog = repr(prog)
@@ -38,7 +48,7 @@ def load_S0_L0_from_cache():
         everything = []
         # create everything if suficiently small
         if len(pred_loc)**2 * len(pred_rel)**2 < sample_limit:
-            everything = cross([pred_loc, pred_loc, pred_rel, pred_rel])
+            everything = cross(pred_loc, pred_loc, pred_rel, pred_rel)
         # otherwise we sample
         else:
             for _ in range(sample_limit):
@@ -46,8 +56,10 @@ def load_S0_L0_from_cache():
                 pred_rel = list(pred_rel)
                 a0 = random.choice(pred_loc)
                 a1 = random.choice(pred_loc)
+                a0,a1 = list(sorted([a0,a1]))
                 a2 = random.choice(pred_rel)
                 a3 = random.choice(pred_rel)
+                a2,a3 = list(sorted([a2,a3]))
                 everything.append([a0, a1, a2, a3])
 
         ret = [((a[0],a[1]) , (a[2],a[3])) for a in everything]
@@ -109,8 +121,8 @@ def get_cache():
             print ("finished dumping")
 
 # build PS1 from PS0 and PL0
-def PS1(prog, PS0, PL0, force_add = None):
-    legal_specs = [eval_spec(x) for x in PS0(prog, force_add = force_add)]
+def PS1(prog, PS0, PL0, force_add = None, sample_limit=3600):
+    legal_specs = [eval_spec(x) for x in PS0(prog, sample_limit, force_add = force_add)]
     weights = []
     
     for spec in legal_specs:
@@ -145,6 +157,7 @@ def PL1(spec, PS0, PL0):
 
 if __name__ == '__main__':
     # get_cache()
+
     PS0, PL0 = load_S0_L0_from_cache()
     prog = gen_prog()
 
