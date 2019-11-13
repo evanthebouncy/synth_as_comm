@@ -161,6 +161,8 @@ if __name__ == '__main__':
     PS0, PL0 = load_S0_L0_from_cache()
     prog = gen_prog()
 
+    # prog = [('B', (0, 1)), ('B', (2, 0)), ('R', (3, 3))]
+
     render_dots(prog, "orig_prog")
 
     rand_spec = eval_spec(random.choice(PS0(prog)))
