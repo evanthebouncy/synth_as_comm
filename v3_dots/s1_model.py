@@ -131,7 +131,8 @@ def train(train_path):
             print (i)
             print (loss)
             print ('program ', train_batch[0][0])
-            sample = nns1.get_samples(train_batch[0][0], 10)
+            sample = nns1.get_samples(train_batch[0][0], 20)
+            sample = list(set(sample))
             for s in sample:
                 print (s)
             nns1.save('saved_models/s1.mdl')
