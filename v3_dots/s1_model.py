@@ -116,7 +116,7 @@ def train(train_path):
     data_len = len(training_data) - batch_size - 2
     nns1 = NNS1()
 
-    for i in range(100000):
+    for i in range(100000000):
         random_idx = random.randint(0, data_len)
         train_batch = training_data[random_idx:random_idx + batch_size]
 
@@ -128,6 +128,7 @@ def train(train_path):
         nns1.opt.step()
 
         if i % 1000 == 0:
+            print (i)
             print (loss)
             print ('program ', train_batch[0][0])
             sample = nns1.get_samples(train_batch[0][0], 10)
