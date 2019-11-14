@@ -37,6 +37,13 @@ def description_rel_to_np(desc):
     ret[4][CC.index(c2)] = 1.0
     return ret
 
+def np_to_description_loc(nump):
+    a,b,c,d,e = nump
+    return (QQ[a], CC[b], DD1[c], DD2[d], DD3[e])
+def np_to_description_rel(nump):
+    a,b,c,d,e = nump
+    return (REL[a], QQ[b], CC[c], QQ[d], CC[e])
+
 # make a S1 sampler based off of PS1
 def get_S1(PS0, PL0):
 

@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import random
 
-from gen_s1_data import prog_spec_to_np
+from gen_s1_data import prog_spec_to_np, np_to_description_loc, np_to_description_rel
 from utilities import Module
 
 import torch.nn as nn
@@ -88,7 +88,27 @@ class NNS1(Module):
     def get_samples(self, prog, n_sample):
         prog_specs = [(prog, DUMMY_SPEC) for _ in range(n_sample)]
         logprob_specs, _, _ = self(prog_specs)
-        print (logprob_specs)
+        specc = self.to_numpy(torch.argmax(logprob_specs,-1))
+        ret = []
+        for spec in specc:
+            loc1, loc2 = spec[:5], spec[5:10]
+            rel1, rel2 = spec[10:15], spec[15:20]
+            try:
+                to_add = ((np_to_description_loc(loc1),
+                  np_to_description_loc(loc2)),
+                 (np_to_description_rel(rel1),
+                    np_to_description_rel(rel2)))
+                ret.append(to_add)
+            except:
+                pass
+        return ret
+
+    def save(self, loc):
+        torch.save(self.state_dict(), loc)
+
+    def load(self, loc):
+        self.load_state_dict(torch.load(loc))
+
 
 def train(train_path):
     training_data = pickle.load(open(train_path, "rb"))
@@ -100,17 +120,21 @@ def train(train_path):
         random_idx = random.randint(0, data_len)
         train_batch = training_data[random_idx:random_idx + batch_size]
 
-        print (nns1.get_prog_spec_logpr([training_data[0] for _ in range(100)]) / 100 / 20)
+        # print (nns1.get_prog_spec_logpr([training_data[0] for _ in range(100)]) / 100 / 20)
 
         nns1.opt.zero_grad()
         loss = nns1.loss(train_batch)
-        # print (loss)
         loss.backward()
         nns1.opt.step()
 
-        if i % 100 == 0:
-            nns1.get_samples(train_batch[0][0], 100)
-            assert 0
+        if i % 1000 == 0:
+            print (loss)
+            print ('program ', train_batch[0][0])
+            sample = nns1.get_samples(train_batch[0][0], 10)
+            for s in sample:
+                print (s)
+            nns1.save('saved_models/s1.mdl')
+            print ("model saved")
 
 if __name__ == '__main__':
     train("s1_training.p")
