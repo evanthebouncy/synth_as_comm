@@ -8,8 +8,8 @@ L0VS = pickle.load(open("L0VS.p" ,"rb"))
 # the literal listener upon hearing utterances
 def L0(us):
     ret = set.intersection(*[L0VS[u] for u in us])
-    pr = np.array([1.0 + 1e-4 * np.random.random() for i in range(len(ret))])
-    return ret, pr / sum(pr) 
+    pr = np.ones(len(ret)) + 1e-4 * np.random.random(len(ret))
+    return ret, pr / np.sum(pr) 
 
 # the literal speaker that utters all it can sans whats already being said
 def S0(prog_tup, us=[]):
@@ -33,7 +33,7 @@ def PS1_1(prog_tup, us):
         vs_us_new = set.intersection(vs_us, L0([u_new])[0]) if len(vs_us) > 0 else L0([u_new])[0]
         u_weights.append(1 / len(vs_us_new))
     u_weights = np.array(u_weights)
-    return u_news, u_weights / sum(u_weights)
+    return u_news, u_weights / np.sum(u_weights)
 
 # get a logPS1 score for a particular us upon prog_tup
 def logPS1(prog_tup, us):
@@ -49,10 +49,10 @@ def logPS1(prog_tup, us):
 def PL1(us):
     progs = list(L0(us)[0])
     prog_weights = []
-    print (len(progs))
-    if len(progs) > 100:
-        print ("too long")
-        return L0(us)
+    #print (len(progs))
+    #if len(progs) > 100:
+    #    print ("too long")
+    #    return L0(us)
 
     for i, p in tqdm.tqdm(enumerate(progs)):
         prog_weights.append(logPS1(p, us))
@@ -78,9 +78,10 @@ def interactive(listener):
                 us.append((coords, (shape, raw[3])))
 
         prog_tups, prog_weights = listener(us)
+        print (f"{len(prog_tups)} candidates remain")
         prog_tups = list(prog_tups)
         idx_weights = list(reversed(sorted(list(zip(prog_weights, range(len(prog_weights)))))))
-        print (f"{len(prog_tups)} candidates remain , top3 {idx_weights[:3]}")
+        print (f"top3 {idx_weights[:3]}")
         top3 = [x[1] for x in idx_weights[:3]]
         for j, i in enumerate(top3):
             draw(render_shapes(unserialize(prog_tups[i])), f"candidate_{j}")
