@@ -63,7 +63,7 @@ def interactive(listener):
     draw(shapes, 'target')
     us = []
     while True:
-        raw = input("i j SHAPE COLOR \n>>>").split(' ')
+        raw = input("i[0-6] j[0-6] SHAPE[SPHERE CUBE EMPTY] COLOR[R G B] \n>>>").split(' ')
         # UNDO UNDO LMAO
         if raw[0] == 'UNDO':
             us = us[:-1]
