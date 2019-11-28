@@ -13,7 +13,10 @@ var OFFSET2 = WW * 7;
 var OFFSET3 = WW * 15;
 var OFFSET4 = OFFSET3 + WW*3
 
-var target = all_shapes[0];
+let target_id = Math.floor(Math.random() * all_shapes.length);
+let target = all_shapes[target_id];
+
+var L0SETS = {};
 
 // clear a grid canvas
 function clear_grid_canvas(grid_canv_name){
@@ -25,10 +28,19 @@ function clear_grid_canvas(grid_canv_name){
     }
 }
 
+// fill a grid canvas with the EMPTY tile
+function populate_empty_canvas(grid_canv_name){
+    for (var i=0; i<L; i+=1) {
+        for (var j=0; j<L; j+=1) {
+            let boxstr = grid_canv_name+i+j;
+            $(boxstr).css("background-image", 'url(assets/empty.png)');
+        }
+    }
+}
+
 // render a list of shapes onto grid vansaas
 function render_shape_list(shape_list, grid_canv_name){
     Object.entries(shape_list).forEach( ([key, value]) => {
-        console.log(value);
         let ii = value[0][0];
         let jj = value[0][1];
         let ss = value[1][0];
@@ -50,11 +62,13 @@ function make_target(){
             box.className = "box smol";
             box.style.top = "" + (i*WW_SMOL + OFFSETTOP) + "vmin";
             box.style.left = "" + (j*WW_SMOL + 10) + "vmin";
-            $(box).hover(function(){
-                $(this).css("border-width", "medium");
-            }, function(){
-                $(this).css("border-width", "thin");
-            });
+            // $(box).hover(function(){
+            //     $(this).css("border-width", "medium");
+            // }, function(){
+            //     $(this).css("border-width", "thin");
+            // });
+            // put empty
+            $(box).css("background-image", 'url(assets/empty.png)');
             $("#grid").append(box);
 
         };
@@ -74,11 +88,11 @@ function make_candidates(){
                 box.className = "box smol";
                 box.style.top = "" + (i*WW_SMOL + OFFSETTOP + WW_SMOL * cand * 7.5) + "vmin";
                 box.style.left = "" + (j*WW_SMOL + OFFSET4) + "vmin";
-                $(box).hover(function(){
-                    $(this).css("border-width", "medium");
-                }, function(){
-                    $(this).css("border-width", "thin");
-                });
+                // $(box).hover(function(){
+                //     $(this).css("border-width", "medium");
+                // }, function(){
+                //     $(this).css("border-width", "thin");
+                // });
                 $("#grid").append(box);
 
             };
@@ -166,9 +180,9 @@ function make_layout() {
         }, function(){
             $(this).css("border-width", "thin");
         });
-        if (jj == 0) {$(box).css("background-color", 'red');}
-        if (jj == 1) {$(box).css("background-color", 'green');}
-        if (jj == 2) {$(box).css("background-color", 'blue');}
+        if (jj == 0) { $(box).css("background-image", 'url(assets/red.png)');}
+        if (jj == 1) { $(box).css("background-image", 'url(assets/green.png)');}
+        if (jj == 2) { $(box).css("background-image", 'url(assets/blue.png)');}
         let myid = jj;
         $(box).click(function(){
             color_idx = myid;
@@ -187,21 +201,30 @@ function make_layout() {
 
     // ask the L0 robot
     var box = document.createElement("div"); 
-    box.className = "box big";
+    box.className = "interact";
     box.id = "L0";
     box.style.top = "" + (OFFSETTOP + WW * 2.5) + "vmin";
     box.style.left = "" + (OFFSET3) + "vmin";
     $(box).css("background-image", 'url(assets/robot.png)');
     // add the callback to solve the L0 problem
     $(box).click(function(){
-        var l0_candidates = L0(examples);
-        console.log(l0_candidates);
-        let n_cands = Math.min(l0_candidates.length, 3)
+        let l0_candidates = L0(examples);
+        console.log("hi");
+        // console.log(S11(l0_candidates[2], [[[2,2],[2,0]]]));
+        let l1_candidates = L1(examples);
+
+        let n_cands = Math.min(l1_candidates.length, 3)
         for (var cand_id = 0; cand_id < n_cands; cand_id++){
-            let cand_shape = all_shapes[l0_candidates[cand_id]];
+            let cand_shape = all_shapes[l1_candidates[cand_id]];
             clear_grid_canvas("#cand_box_"+cand_id);
+            populate_empty_canvas("#cand_box_"+cand_id);
             render_shape_list(cand_shape, "#cand_box_"+cand_id);
         }
+    });
+    $(box).hover(function(){
+        $(this).css("border-width", "thick");
+    }, function(){
+        $(this).css("border-width", "thin");
     });
     $("#control").append(box);
 
