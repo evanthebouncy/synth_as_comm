@@ -199,11 +199,38 @@ function make_layout() {
     box.style.left = "" + (OFFSET2) + "vmin";
     $("#control").append(box);
 
-    // ask the L0 robot
+
+    // ask the L0 robot ===========================
     var box = document.createElement("div"); 
     box.className = "interact";
     box.id = "L0";
-    box.style.top = "" + (OFFSETTOP + WW * 2.5) + "vmin";
+    box.style.top = "" + (OFFSETTOP + WW * 1.5) + "vmin";
+    box.style.left = "" + (OFFSET3) + "vmin";
+    $(box).css("background-image", 'url(assets/robot_0.png)');
+    // add the callback to solve the L0 problem
+    $(box).click(function(){
+        let l0_candidates = Array.from(L0(examples));
+
+        let n_cands = Math.min(l0_candidates.length, 3)
+        for (var cand_id = 0; cand_id < n_cands; cand_id++){
+            let cand_shape = all_shapes[l0_candidates[cand_id]];
+            clear_grid_canvas("#cand_box_"+cand_id);
+            populate_empty_canvas("#cand_box_"+cand_id);
+            render_shape_list(cand_shape, "#cand_box_"+cand_id);
+        }
+    });
+    $(box).hover(function(){
+        $(this).css("border-width", "thick");
+    }, function(){
+        $(this).css("border-width", "thin");
+    });
+    $("#control").append(box);
+
+    // ask the L1 robot ========================== 
+    var box = document.createElement("div"); 
+    box.className = "interact";
+    box.id = "L1";
+    box.style.top = "" + (OFFSETTOP + WW * 3.5) + "vmin";
     box.style.left = "" + (OFFSET3) + "vmin";
     $(box).css("background-image", 'url(assets/robot.png)');
     // add the callback to solve the L0 problem
@@ -227,6 +254,11 @@ function make_layout() {
         $(this).css("border-width", "thin");
     });
     $("#control").append(box);
+
+
+
+
+
 
     // do the first render
     render_plant();
