@@ -98,6 +98,8 @@ def unserialize(tup):
 # turn shape into a cononical repr so to keep duplicate programs out
 def shape_to_repr(shapes):
     return tuple(sorted(list(shapes.items())))
+def unrepr_shape(shape_repr):
+    return dict(shape_repr)
 
 if __name__ == '__main__':
     # prog = gen_rand_prog()
