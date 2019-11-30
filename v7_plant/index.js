@@ -226,14 +226,26 @@ function make_layout() {
     // add the callback to solve the L0 problem
     $(box).click(function(){
         let l0_candidates = Array.from(L0(examples));
-
-        let n_cands = Math.min(l0_candidates.length, 3)
+        
+        let sorted_cands = l0_candidates.sort(function(a,b){
+            return all_shapes[a].length - all_shapes[b].length; //ASC, For Descending order use: b - a
+        });
+        
+        let n_cands = Math.min(sorted_cands.length, 3)
         for (var cand_id = 0; cand_id < n_cands; cand_id++){
-            let cand_shape = all_shapes[l0_candidates[cand_id]];
+            let cand_shape = all_shapes[sorted_cands[cand_id]];
             clear_grid_canvas("#cand_box_"+cand_id);
             populate_empty_canvas("#cand_box_"+cand_id);
             render_shape_list(cand_shape, "#cand_box_"+cand_id);
         }
+
+        // let n_cands = Math.min(l0_candidates.length, 3)
+        // for (var cand_id = 0; cand_id < n_cands; cand_id++){
+        //     let cand_shape = all_shapes[l0_candidates[cand_id]];
+        //     clear_grid_canvas("#cand_box_"+cand_id);
+        //     populate_empty_canvas("#cand_box_"+cand_id);
+        //     render_shape_list(cand_shape, "#cand_box_"+cand_id);
+        // }
     });
     $(box).hover(function(){
         $(this).css("border-width", "thick");
