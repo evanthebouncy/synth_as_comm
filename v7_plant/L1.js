@@ -90,7 +90,6 @@ function logS1(shape_id, utters){
 }
 
 
-
 function L1(examples) {
     var utters = [];
     // examples to utterances
@@ -101,7 +100,10 @@ function L1(examples) {
 
     let l0_candidates = Array.from(L0(examples));
     console.log("all l0 sol length ", l0_candidates.length);
-    let subsample_candidates = l0_candidates.length > 100 ? l0_candidates.slice(0,100) : l0_candidates;
+    let sorted_l0_cands = l0_candidates.sort(function(a,b){
+        return random_shape_order[a] - random_shape_order[b];
+    });
+    let subsample_candidates = l0_candidates;
 
     var s1logprs = [];
     for (var j=0; j<subsample_candidates.length; j++){
@@ -117,6 +119,5 @@ function L1(examples) {
     console.log(sorted_cands);
     return sorted_cands.map(x => x[1]);
 }
-
 
 
