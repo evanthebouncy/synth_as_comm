@@ -2,7 +2,7 @@ import random
 import re
 
 # ------------- the alphabet and the input string ---------------
-L = 10
+L = 6
 SIG = 'Aa10- '
 
 # --- delimiters ---
@@ -45,10 +45,12 @@ class E(P):
         # F
         if E_params['E'] == 0:
             return E(F.generate(E_params))
-        # TODO the following 3 are todos
         # N
         if E_params['E'] == 1:
             return E(N.generate(E_params))
+
+        # TODO : do those later . . . 
+        assert 0, "we are not handling these yet!"
         # N(N)
         if E_params['E'] == 2:
             return E((N.generate(E_params), N.generate(E_params)))
@@ -61,7 +63,7 @@ class E(P):
     
     def __call__(self, s):
         # singular function
-        if type(self.inner_func) != type([]):
+        if type(self.inner_func) != type(()):
             return self.inner_func(s)
         # function composition
         if len(self.inner_func) == 2:
@@ -114,7 +116,34 @@ class F(E):
         return f"F({self.f_type, self.f_params})"
 
 class N(E):
-    pass
+    @staticmethod
+    def generate(E_params):
+        # replace
+        if E_params['N'] == 0:
+            return N('replace', E_params['N_replace'])
+        # getall
+        if E_params['N'] == 1:
+            return N('getall', E_params['N_getall'])
+
+    def __init__(self, f_type, f_params):
+        assert f_type in ['replace', 'getall']
+        if f_type == 'replace':
+            id1, id2 = f_params
+            self.f_type, self.f_params = f_type, (SIG[id1], SIG[id2])
+        if f_type == 'getall':
+            get_type = [SIG_LET, SIG_NUM, SIG_LIM][f_params]
+            self.f_type, self.f_params = f_type, get_type
+
+    def __call__(self, s):
+        if self.f_type == 'replace':
+            return s.replace(self.f_params[0], self.f_params[1])
+
+        if self.f_type == 'getall':
+            igotgot = [mo.group() for mo in re.finditer(self.f_params, s) ]
+            return ''.join(igotgot)
+    
+    def __str__(self):
+        return f"F({self.f_type, self.f_params})"
 
 def sample_E_params():
     
@@ -135,22 +164,40 @@ def sample_E_params():
 
         return lim1_type, lim1_num, lim2_type, lim2_num
 
+    def get_random_replace():
+        rep1 = random.choice([x for x in range(len(SIG))])
+        rep2 = random.choice([x for x in range(len(SIG))])
+        if rep1 == rep2:
+            return get_random_replace()
+        return rep1, rep2
+
     E_params = {
-        'E' : random.choice([0]),
+        'E' : random.choice([0,1]),
+
         'F' : random.choice([0,1]),
         'F_substr' : get_random_substr(),
         'F_span' : get_random_span(),
+
+        'N' : random.choice([0,1]),
+        'N_replace' : get_random_replace(),
+        'N_getall' : random.choice([0,1,2]),
         }
     return E_params
 
 def count_functions():
-    seen = set()
+    func_seen = set()
+    input_seen = set()
     for i in range(10000000):
+
         func = P.generate([sample_E_params() for _ in range(2)])
         func_repr = str(func)
-        seen.add(func_repr)
+        func_seen.add(func_repr)
+
+        inp = sample_input()
+        input_seen.add(inp)
+        
         if i % 1000 == 0:
-            print (len(seen))
+            print (len(func_seen), len(input_seen))
 
 
 if __name__ == '__main__':
@@ -163,4 +210,4 @@ if __name__ == '__main__':
         x = sample_input()
         print (repr(x))
         print (repr(prog(x)))
-    ## count_functions()
+    count_functions()
