@@ -188,8 +188,10 @@ def count_functions():
     func_seen = set()
     input_seen = set()
     for i in range(10000000):
+        # generate a function with either 1 or 2 Es
+        num_es = random.randint(1,2)
+        func = P.generate([sample_E_params() for _ in range(num_es)])
 
-        func = P.generate([sample_E_params() for _ in range(2)])
         func_repr = str(func)
         func_seen.add(func_repr)
 
@@ -197,12 +199,13 @@ def count_functions():
         input_seen.add(inp)
         
         if i % 1000 == 0:
-            print (len(func_seen), len(input_seen))
+            print (f"func size {len(func_seen)}, input size {len(input_seen)}")
 
 
 if __name__ == '__main__':
     # print (repr(sample_input()))
-    prog = P.generate([sample_E_params() for _ in range(2)])
+    num_es = random.randint(1,2)
+    prog = P.generate([sample_E_params() for _ in range(num_es)])
     print (prog)
 
     for i in range(5):
