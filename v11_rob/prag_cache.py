@@ -10,9 +10,8 @@ def make_vs_cache():
 
     # go ahead and genrate all the funcions and inputs there is
     for i in range(10000000):
-        # generate a function with either 1 or 2 Es
-        num_es = random.randint(1,2)
-        E_params = [sample_E_params() for _ in range(num_es)]
+        # generate a function with 2 Es (this way all program length same)
+        E_params = [sample_E_params() for _ in range(2)]
         func = P.generate(E_params)
 
         func_repr = str(func)
@@ -30,6 +29,7 @@ def make_vs_cache():
 
     # to cache these crazy f00ls
     prog_params = []
+    all_inputs = list(input_seen)
     vs = dict()
 
     # for the crazy cross product, cache in the results O_O
@@ -49,9 +49,8 @@ def make_vs_cache():
             pickle.dump((prog_params, vs), open("L0VS.p", "wb"))
             print ("dumpked pickle")
 
-    pickle.dump((prog_params, vs), open("L0VS.p", "wb"))
+    pickle.dump((prog_params, all_inputs, vs), open("L0VS.p", "wb"))
     print ("dumpked pickle")
-
 
 if __name__ == '__main__':
     make_vs_cache()

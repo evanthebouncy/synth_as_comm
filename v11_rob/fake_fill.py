@@ -2,16 +2,18 @@ import random
 import re
 
 # ------------- the alphabet and the input string ---------------
-L = 5
-SIG = 'Aa10-'
+L = 7
+# SIG = 'Aa10-'
+SIG = 'a0-'
 
 # --- delimiters ---
-SIG_LET = r'A|a'
-SIG_NUM = r'1|0'
+SIG_LET = r'a'
+# SIG_LET = r'A|a'
+SIG_NUM = r'0'
 SIG_LIM = r'-'
 
 def sample_input():
-    l = random.choice([_ for _ in range(1,L+1)])
+    l = random.choice([_ for _ in range(0,L+1)])
     return ''.join([random.choice(SIG) for _ in range(l)])
 
 # ------------- the program sampler ---------------
@@ -48,14 +50,16 @@ class E(P):
         # N
         if E_params['E'] == 1:
             return E(N.generate(E_params))
-
+        # C
+        if E_params['E'] == 2:
+            return E(C.generate(E_params))
         # TODO : do those later . . . 
         assert 0, "we are not handling these yet!"
         # N(N)
-        if E_params['E'] == 2:
+        if E_params['E'] == 3:
             return E((N.generate(E_params), N.generate(E_params)))
         # N(F)
-        if E_params['E'] == 3:
+        if E_params['E'] == 4:
             return E((N.generate(E_params), F.generate(E_params)))
 
     def __init__(self, inner_func):
@@ -154,6 +158,22 @@ class N(E):
     def __str__(self):
         return f"N({self.f_type, self.f_params})"
 
+# put down a constant
+class C(E):
+    @staticmethod
+    def generate(E_params):
+        return C('const', E_params['C_const'])
+
+    def __init__(self, f_type, f_params):
+        assert f_type in ['const']
+        self.f_type, self.f_params = f_type, SIG[f_params]
+
+    def __call__(self, s):
+        return self.f_params
+    
+    def __str__(self):
+        return f"C({self.f_type, self.f_params})"
+
 def sample_E_params():
     
     def get_random_substr():
@@ -182,7 +202,7 @@ def sample_E_params():
         return get_type, get_idx
 
     E_params = {
-        'E' : random.choice([0,1]),
+        'E' : random.choice([0,1,2]),
 
         'F' : random.choice([0,1]),
         'F_substr' : get_random_substr(),
@@ -191,6 +211,8 @@ def sample_E_params():
         'N' : random.choice([0,1]),
         'N_getfirst' : get_random_getfirst(),
         'N_getall' : random.choice([0,1,2]),
+
+        'C_const' : random.choice([ix for ix in range(len(SIG))]),
         }
     return E_params
 
@@ -223,5 +245,5 @@ if __name__ == '__main__':
         x = sample_input()
         print (repr(x))
         print (repr(prog(x)))
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     # count_functions()
