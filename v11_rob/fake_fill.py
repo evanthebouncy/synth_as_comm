@@ -3,12 +3,12 @@ import re
 
 # ------------- the alphabet and the input string ---------------
 L = 6
-SIG = 'Aa10- '
+SIG = 'Aa10-'
 
 # --- delimiters ---
 SIG_LET = r'A|a'
 SIG_NUM = r'1|0'
-SIG_LIM = r'-| '
+SIG_LIM = r'-'
 
 def sample_input():
     l = random.choice([_ for _ in range(1,L)])
@@ -118,39 +118,51 @@ class F(E):
 class N(E):
     @staticmethod
     def generate(E_params):
-        # replace
+        # getfirst
         if E_params['N'] == 0:
-            return N('replace', E_params['N_replace'])
+            return N('getfirst', E_params['N_getfirst'])
         # getall
         if E_params['N'] == 1:
             return N('getall', E_params['N_getall'])
 
     def __init__(self, f_type, f_params):
-        assert f_type in ['replace', 'getall']
-        if f_type == 'replace':
-            id1, id2 = f_params
-            self.f_type, self.f_params = f_type, (SIG[id1], SIG[id2])
+        assert f_type in ['getfirst', 'getall']
+        if f_type == 'getfirst':
+            # get the idx copy of the type group
+            get_type, idx = f_params
+            get_type = [SIG_LET, SIG_NUM, SIG_LIM][get_type]
+            self.f_type, self.f_params = f_type, (get_type, idx)
         if f_type == 'getall':
             get_type = [SIG_LET, SIG_NUM, SIG_LIM][f_params]
             self.f_type, self.f_params = f_type, get_type
 
     def __call__(self, s):
-        if self.f_type == 'replace':
-            return s.replace(self.f_params[0], self.f_params[1])
+        if self.f_type == 'getfirst':
+            get_type, idx = self.f_params
+            # use this to handle contiguous stuff
+            get_type = f"[{get_type}]+"
+            igotgot = [mo.group() for mo in re.finditer(get_type, s) ]
+            if idx > len(igotgot) - 1:
+                return ''
+            else:
+                return igotgot[idx]
 
         if self.f_type == 'getall':
             igotgot = [mo.group() for mo in re.finditer(self.f_params, s) ]
             return ''.join(igotgot)
     
     def __str__(self):
-        return f"F({self.f_type, self.f_params})"
+        return f"N({self.f_type, self.f_params})"
 
 def sample_E_params():
     
     def get_random_substr():
-        start = random.randint(0,L-2)
-        end = random.randint(start,L-1)
-        return start, end
+        start = random.randint(0,L-1)
+        end = random.randint(0,L-1)
+        if start <= end:
+            return start, end
+        else:
+            return get_random_substr()
     
     def get_random_span():
         lim1_type = random.randint(0,2)
@@ -164,12 +176,10 @@ def sample_E_params():
 
         return lim1_type, lim1_num, lim2_type, lim2_num
 
-    def get_random_replace():
-        rep1 = random.choice([x for x in range(len(SIG))])
-        rep2 = random.choice([x for x in range(len(SIG))])
-        if rep1 == rep2:
-            return get_random_replace()
-        return rep1, rep2
+    def get_random_getfirst():
+        get_type = random.randint(0,2)
+        get_idx = random.randint(0,1)
+        return get_type, get_idx
 
     E_params = {
         'E' : random.choice([0,1]),
@@ -179,7 +189,7 @@ def sample_E_params():
         'F_span' : get_random_span(),
 
         'N' : random.choice([0,1]),
-        'N_replace' : get_random_replace(),
+        'N_getfirst' : get_random_getfirst(),
         'N_getall' : random.choice([0,1,2]),
         }
     return E_params
@@ -213,4 +223,5 @@ if __name__ == '__main__':
         x = sample_input()
         print (repr(x))
         print (repr(prog(x)))
-    count_functions()
+    import pdb; pdb.set_trace()
+    # count_functions()
