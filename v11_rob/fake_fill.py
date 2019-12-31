@@ -2,7 +2,7 @@ import random
 import re
 
 # ------------- the alphabet and the input string ---------------
-L = 6
+L = 5
 SIG = 'Aa10-'
 
 # --- delimiters ---
@@ -11,7 +11,7 @@ SIG_NUM = r'1|0'
 SIG_LIM = r'-'
 
 def sample_input():
-    l = random.choice([_ for _ in range(1,L)])
+    l = random.choice([_ for _ in range(1,L+1)])
     return ''.join([random.choice(SIG) for _ in range(l)])
 
 # ------------- the program sampler ---------------
