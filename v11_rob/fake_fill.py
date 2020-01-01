@@ -125,32 +125,27 @@ class N(E):
     def generate(E_params):
         # getfirst
         if E_params['N'] == 0:
-            return N('getfirst', E_params['N_getfirst'])
+            return N('replace', E_params['N_replace'])
         # getall
         if E_params['N'] == 1:
             return N('getall', E_params['N_getall'])
 
     def __init__(self, f_type, f_params):
-        assert f_type in ['getfirst', 'getall']
-        if f_type == 'getfirst':
+        assert f_type in ['replace', 'getall']
+        if f_type == 'replace':
             # get the idx copy of the type group
-            get_type, idx = f_params
-            get_type = [SIG_LET, SIG_NUM, SIG_LIM][get_type]
-            self.f_type, self.f_params = f_type, (get_type, idx)
+            rep1, rep2 = f_params
+            rep1 = [SIG_LET, SIG_NUM, SIG_LIM][rep1]
+            rep2 = [SIG_LET, SIG_NUM, SIG_LIM][rep2]
+            self.f_type, self.f_params = f_type, (rep1, rep2)
         if f_type == 'getall':
             get_type = [SIG_LET, SIG_NUM, SIG_LIM][f_params]
             self.f_type, self.f_params = f_type, get_type
 
     def __call__(self, s):
-        if self.f_type == 'getfirst':
-            get_type, idx = self.f_params
-            # use this to handle contiguous stuff
-            get_type = f"[{get_type}]+"
-            igotgot = [mo.group() for mo in re.finditer(get_type, s) ]
-            if idx > len(igotgot) - 1:
-                return ''
-            else:
-                return igotgot[idx]
+        if self.f_type == 'replace':
+            rep1, rep2 = self.f_params
+            return s.replace(rep1, rep2)
 
         if self.f_type == 'getall':
             igotgot = [mo.group() for mo in re.finditer(self.f_params, s) ]
@@ -197,10 +192,12 @@ def sample_E_params():
 
         return lim1_type, lim1_num, lim2_type, lim2_num
 
-    def get_random_getfirst():
-        get_type = random.randint(0,2)
-        get_idx = random.randint(0,1)
-        return get_type, get_idx
+    def get_random_replace():
+        rep1 = random.randint(0,2)
+        rep2 = random.randint(0,2)
+        if rep1 == rep2:
+            return get_random_replace()
+        return rep1, rep2
 
     E_params = {
         'E' : random.choice([0,1,2,3]),
@@ -210,7 +207,7 @@ def sample_E_params():
         'F_span' : get_random_span(),
 
         'N' : random.choice([0,1]),
-        'N_getfirst' : get_random_getfirst(),
+        'N_replace' : get_random_replace(),
         'N_getall' : random.choice([0,1,2]),
 
         'C_const' : random.choice([ix for ix in range(len(SIG))]),

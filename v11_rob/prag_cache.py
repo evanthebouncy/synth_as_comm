@@ -7,6 +7,7 @@ def make_func_io_hash(func, all_inps):
     io_list = []
     for inp in all_inps:
         io_list.append((inp, func(inp)))
+    return str(io_list)
     return hash(str(io_list))
 
 def make_vs_cache():

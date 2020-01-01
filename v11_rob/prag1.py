@@ -30,13 +30,6 @@ def S0(prog_id, us=[]):
             utters.append(to_append)
     return utters
 
-# a heuristic for a good candidate is simply longest
-def Slong(prog_id):
-    prog = P.generate(ALL_PROGS[prog_id])
-    xx = [(len(prog(inp)), inp, prog(inp)) for inp in ALL_INPUTS]
-    return list(reversed(sorted(xx)))[:10]
-    
-
 # get 1step S1 probability, PS1_1(u | w us)
 # return a list of further uttrances and PS1_1(u | w us) normalised
 def PS1_1(prog_id, us):
@@ -88,16 +81,10 @@ def interactive(listener, goal_prog_id):
     print ("target prog ")
     print (goal_prog_id)
     print (goal_prog)
-    print (Slong(goal_prog_id))
 
     us = []
     while True:
         raw = input("new input [output will be generated]\n>>>")
-        # UNDO UNDO LMAO
-        if raw == 'UNDO':
-            us = us[:-1]
-            if len(us) == 0:
-                continue
         # do a new program 
         if raw == 'NEW':
             rand_id = random.choice([_ for _ in range(len(ALL_PROGS))])
@@ -124,10 +111,16 @@ def interactive(listener, goal_prog_id):
         if prog_idxs[top3[0]] == goal_prog_id:
             print ("YOU FUCKIN WON THE GAME")
 
+        from prag_cache import make_func_io_hash 
+        f_cand = P.generate(ALL_PROGS[prog_idxs[top3[0]]])
+        h1 = hash(make_func_io_hash(f_cand, ALL_INPUTS))
+        h2 = hash(make_func_io_hash(goal_prog, ALL_INPUTS))
+        print (h1, h2, h1 == h2)
+
 
 
 if __name__ == '__main__':
     rand_id = random.choice([_ for _ in range(len(ALL_PROGS))])
-    rand_id = 616
+    rand_id = 1803
     interactive(PL1, rand_id)
     
