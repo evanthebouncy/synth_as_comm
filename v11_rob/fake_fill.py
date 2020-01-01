@@ -3,12 +3,10 @@ import re
 
 # ------------- the alphabet and the input string ---------------
 L = 7
-# SIG = 'Aa10-'
 SIG = 'a0-'
 
 # --- delimiters ---
 SIG_LET = r'a'
-# SIG_LET = r'A|a'
 SIG_NUM = r'0'
 SIG_LIM = r'-'
 
@@ -53,14 +51,14 @@ class E(P):
         # C
         if E_params['E'] == 2:
             return E(C.generate(E_params))
+        # N(F)
+        if E_params['E'] == 3:
+            return E((N.generate(E_params), F.generate(E_params)))
         # TODO : do those later . . . 
         assert 0, "we are not handling these yet!"
         # N(N)
         if E_params['E'] == 3:
             return E((N.generate(E_params), N.generate(E_params)))
-        # N(F)
-        if E_params['E'] == 4:
-            return E((N.generate(E_params), F.generate(E_params)))
 
     def __init__(self, inner_func):
         self.inner_func = inner_func
@@ -74,7 +72,10 @@ class E(P):
             return self.inner_func[0](self.inner_func[1](s))
     
     def __str__(self):
-        return f"E({self.inner_func})"
+        if type(self.inner_func) != type (()):
+            return f"E({self.inner_func})"
+        else:
+            return f"E({self.inner_func[0]}({self.inner_func[1]}))"
 
 # substr(i,j) = return s[i:j]
 #     get sub-string from position i to position j
@@ -202,7 +203,7 @@ def sample_E_params():
         return get_type, get_idx
 
     E_params = {
-        'E' : random.choice([0,1,2]),
+        'E' : random.choice([0,1,2,3]),
 
         'F' : random.choice([0,1]),
         'F_substr' : get_random_substr(),
@@ -214,7 +215,19 @@ def sample_E_params():
 
         'C_const' : random.choice([ix for ix in range(len(SIG))]),
         }
+
+    # filtering to make sure world is sane
+    if E_params['E'] == 3 and E_params['F'] == 0 and E_params['F_substr'][1] - E_params['F_substr'][0] < 4:
+        return sample_E_params()
     return E_params
+
+def sample_P_params():
+    e1 = sample_E_params()
+    e2 = sample_E_params()
+    if e1['E'] == 2 or e2['E'] == 2:
+        return [e1, e2]
+    else:
+        return [e1]
 
 def count_functions():
     func_seen = set()
@@ -236,8 +249,7 @@ def count_functions():
 
 if __name__ == '__main__':
     # print (repr(sample_input()))
-    num_es = random.randint(1,2)
-    prog = P.generate([sample_E_params() for _ in range(num_es)])
+    prog = P.generate(sample_P_params())
     print (prog)
 
     for i in range(5):
@@ -245,5 +257,5 @@ if __name__ == '__main__':
         x = sample_input()
         print (repr(x))
         print (repr(prog(x)))
-    # import pdb; pdb.set_trace()
+    import pdb; pdb.set_trace()
     # count_functions()

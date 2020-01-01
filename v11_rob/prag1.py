@@ -6,6 +6,14 @@ import numpy as np
 
 ALL_PROGS, ALL_INPUTS, L0VS = pickle.load(open("L0VS.p" ,"rb"))
 
+# a notion of same program in the sense of function equivalence
+def same_prog(p1, p2):
+    assert 0, "we dont need this now"
+    for inp in ALL_INPUTS:
+        if p1(inp) != p2(inp):
+            return False
+    return True
+
 # the literal listener upon hearing utterances
 def L0(us):
     ret = set.intersection(*[L0VS[u] for u in us])
@@ -120,6 +128,6 @@ def interactive(listener, goal_prog_id):
 
 if __name__ == '__main__':
     rand_id = random.choice([_ for _ in range(len(ALL_PROGS))])
-    rand_id = 630
+    rand_id = 616
     interactive(PL1, rand_id)
     
