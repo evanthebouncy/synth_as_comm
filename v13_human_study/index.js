@@ -100,7 +100,8 @@ function make_target(){
             box.style.top = "" + (i*WW_SMOL + OFFSETTOP) + "vmin";
             box.style.left = "" + (j*WW_SMOL + 10) + "vmin";
             $(box).click(function(){
-                new_problem();
+                target_id += 1;
+                new_problem(target_id);
             });
 
             $("#grid").append(box);
