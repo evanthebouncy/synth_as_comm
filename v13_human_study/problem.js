@@ -141,6 +141,8 @@ function new_problem(target_id, robot_id){
 
 // make the next botton when game is done
 function make_next_button() {
+    // make sure we dont have oen already
+    $("#NEXT").remove();
     // next button
     var box = document.createElement("div"); 
     box.className = "interact";
@@ -194,7 +196,7 @@ function make_target(){
 
     var box = document.createElement("div"); 
     box.id = "target_text";
-    box.innerHTML = "target";
+    box.innerHTML = "pattern to communicate";
     box.className = "box text";
     box.style.top = "" + OFFSETTEXTTOP + "vmin";
     box.style.left = "" + 10 + "vmin";
@@ -292,8 +294,14 @@ function make_working_grid(){
             box.style.top = "" + (i*WW + OFFSETTOP) + "vmin";
             box.style.left = "" + (j*WW + OFFSET2) + "vmin";
             $(box).hover(function(){
+                $(`#cand_box_0${coord_i}${coord_j}`).css("border-width", "thick");
+                $(`#cand_box_1${coord_i}${coord_j}`).css("border-width", "thick");
+                $(`#target_box_${coord_i}${coord_j}`).css("border-width", "thick");
                 $(this).css("border-width", "thick");
             }, function(){
+                $(`#cand_box_0${coord_i}${coord_j}`).css("border-width", "thin");
+                $(`#cand_box_1${coord_i}${coord_j}`).css("border-width", "thin");
+                $(`#target_box_${coord_i}${coord_j}`).css("border-width", "thin");
                 $(this).css("border-width", "thin");
             });
             $("#grid").append(box);
@@ -333,7 +341,7 @@ function make_working_grid(){
     // working area text
     var box = document.createElement("div"); 
     box.id = "working_text";
-    box.innerHTML = "working area";
+    box.innerHTML = "scratch pad";
     box.className = "box text";
     box.style.top = "" + OFFSETTEXTTOP + "vmin";
     box.style.left = "" + OFFSET2 + "vmin";
