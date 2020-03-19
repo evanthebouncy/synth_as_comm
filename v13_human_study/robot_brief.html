@@ -7,11 +7,34 @@
     </head>
 
     <body>
+            
+        <h1 id = "robot_text" style="margin-left: 20%; margin-right : 20%; text-align: center;">
+        </h1>
 
-        <div id="robot_text"></div>
-        <a id="experiment_link"  >Let's Go!</a>
-        <button id="lets_go" style="font-size: 20px;">Let's Go!</button>
+        <div style="display: flex;
+              align-items: center;
+              justify-content: center;">
+            <img id="robot_pix" width="240" style="center;">
+        </div>
+        
+        <h3 id = "robot_text" style="margin-left: 20%; margin-right : 20%; text-align: center;">
+            You will be communicating 12 patterns. After a pattern is correctly guessed by the robot, a yellow arrow will appear. Click on the yellow arrow to advance to the next pattern. 
+        </h3>
+         <div style="display: flex;
+              align-items: center;
+              justify-content: center;">
+            <img src = "assets/forward.png" width="240" style="center;">
+        </div>
 
+        <h3 id = "robot_text" style="margin-left: 20%; margin-right : 20%; text-align: center;">
+            The goal of the experiment is to communicate the pattern with as few examples as possible. At the end of the experiment, we'll show how well you performed against other testers.
+        </h3>
+
+         <div style="display: flex;
+              align-items: center;
+              justify-content: center;">
+            <button id="lets_go" style="font-size: 20px;">Let's Go!</button>
+        </div>
 <script>
 $(document).ready(function(){
     const queryString = window.location.search;
@@ -20,16 +43,16 @@ $(document).ready(function(){
     let trial_id =   parseInt(urlParams.get('trial_id'));
     let robot_id =  urlParams.get('robot_order').split(',').map(x => parseInt(x))[trial_id];
     console.log(`user id ${user_id}, robot id ${robot_id}`);
-    // $("#experiment_link").html(`experiment with robot ${robot_id}`);
-    $("#experiment_link").attr('href', `problem.html${queryString}`);
     $("#lets_go").click(function () {
         window.location = `problem.html${queryString}`;
     });
 
     if (robot_id == 0) {
-        $("#robot_text").html(`You are now communicating with robot ${robot_id+1}`);
+        $("#robot_text").html(`You are now communicating with the WHITE robot`);
+        $('#robot_pix').attr("src", 'assets/robot_0.png');
         } else {
-        $("#robot_text").html(`You are now communicating with robot ${robot_id+1}`);
+        $("#robot_text").html(`You are now communicating with the BLUE robot`);
+        $('#robot_pix').attr("src", 'assets/robot.png');
     }
 });
 </script>
