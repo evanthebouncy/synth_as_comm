@@ -32,6 +32,8 @@ var problem_id = -1;
 var target_ids;
 var robot_id;
 
+const experiment_batch = "batch_1";
+
 // clear a grid canvas
 function clear_grid_canvas(grid_canv_name){
     for (var i=0; i<L; i+=1) {
@@ -266,7 +268,8 @@ function render_l_results(l_candidates, cand_id){
         // register to firebase
         // var ref = fbase.ref('${user_id}/');
         let date_str = new Date().toISOString().slice(0,10);
-        let ref_loc = `${date_str}/${user_id}/`;
+
+        let ref_loc = `${experiment_batch}/${user_id}/data`;
         console.log(ref_loc);
 
         var ref = fbase.ref(ref_loc).push();
