@@ -59,11 +59,14 @@ $(document).ready(function(){
         console.log(overall_white, overall_blue);
     });
 
+    $("#age_range").change(function () {
+        $( "#qage" ).html( $('#age_range')[0].valueAsNumber );
+    });
 
     $("#submit_and_check").click(function () {
         console.log("logging survey feedbacks");
 
-        let age = $("input[name='qage']:checked").val();
+        let age = $('#age_range')[0].valueAsNumber;
         let gender = $("input[name='qgender']:checked").val();
         let easier_robot = $("input[name='qrobot']:checked").val();
         let white_strat = $("#white_strat").val();
