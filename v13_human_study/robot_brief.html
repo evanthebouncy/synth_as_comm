@@ -20,7 +20,7 @@
         <!-- first time show this -->
         <div id="first_time_show" style="display:unset;">
             <h3 id = "robot_text" style="margin-left: 20%; margin-right : 20%; text-align: center;">
-                This robot has a particular way of guessing your pattern, find out how to communicate with it with as few symbols as possible. <br>
+                Remember, the robots think differently. Find out how to communicate with this robot using as few symbols as possible. <br>
                 You will be communicating 12 patterns. After a pattern is correctly guessed, click on the yellow arrow to advance. 
             </h3>
              <div style="display: flex;
@@ -30,16 +30,17 @@
             </div>
 
             <h3 id = "robot_text" style="margin-left: 20%; margin-right : 20%; text-align: center;">
-                At the end of the experiment, we'll show how well you performed against other testers.
+                At the end of the experiment, we'll show how you did compared to other participants.
             </h3>
         </div>
 
-        <!-- second time show this -->
-        <div id="second_time_show" style="display:none;">
-            <h3 id = "robot_text" style="margin-left: 20%; margin-right : 20%; text-align: center;">
-                This robot guesses DIFFERENTLY than the first robot. Please try to communicate with as few symbols as possible.
-            </h3>
-        </div>
+        <!-- second time show this 
+            <div id="second_time_show" style="display:none;">
+                <h3 id = "robot_text" style="margin-left: 20%; margin-right : 20%; text-align: center;">
+                    This robot guesses DIFFERENTLY than the first robot. Please try to communicate with as few symbols as possible.
+                </h3>
+            </div>
+        -->
 
          <div style="display: flex;
               align-items: center;
@@ -59,11 +60,11 @@ $(document).ready(function(){
     });
 
 
-    if (trial_id == 1) {
-        console.log("what ");
-        $("#first_time_show").css("display", "none");
-        $("#second_time_show").css("display", "unset");
-    }
+    // if (trial_id == 1) {
+    //     console.log("what ");
+    //     $("#first_time_show").css("display", "none");
+    //     $("#second_time_show").css("display", "unset");
+    // }
 
     if (robot_id == 0) {
         $("#robot_text").html(`You are now communicating with the WHITE robot`);

@@ -25,6 +25,8 @@ for (var shapid = 0; shapid < all_shapes.length; shapid++){
 
 // to report to the server
 var examples = {};
+var all_examples = [];
+
 var user_id;
 var trial_id;
 
@@ -79,6 +81,7 @@ function new_problem(target_id, robot_id){
     // grab new target-id and clear examples
     const target = all_shapes[target_id];
     examples = {};
+    all_examples = [];
 
     // render progress bar
     $("#progress_bar").html(`pattern ${target_ids.findIndex(x => x == target_id) + 1} out of ${target_ids.length}`)
@@ -281,6 +284,7 @@ function render_l_results(l_candidates, cand_id){
             'target_id' : target_ids[problem_id],
             'robot_id'  : robot_id,
             'examples'  : examples,
+            'all_examples' : all_examples,
             'examples_used' : Object.keys(examples).length,
             'disambiguous_size' : disambiguous_size,
         }
