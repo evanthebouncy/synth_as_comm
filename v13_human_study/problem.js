@@ -27,6 +27,8 @@ for (var shapid = 0; shapid < all_shapes.length; shapid++){
 var examples = {};
 var all_examples = [];
 
+var start_time = 0;
+
 var user_id;
 var trial_id;
 
@@ -35,7 +37,7 @@ var target_ids;
 var robot_id;
 var disambiguous_size = 0;
 
-const experiment_batch = "batch_2";
+const experiment_batch = "batch_3";
 
 // clear a grid canvas
 function clear_grid_canvas(grid_canv_name){
@@ -82,6 +84,8 @@ function new_problem(target_id, robot_id){
     const target = all_shapes[target_id];
     examples = {};
     all_examples = [];
+    
+    start_time = new Date().getTime();
 
     // render progress bar
     $("#progress_bar").html(`pattern ${target_ids.findIndex(x => x == target_id) + 1} out of ${target_ids.length}`)
@@ -283,6 +287,8 @@ function render_l_results(l_candidates, cand_id){
             'problem_id' : problem_id,
             'target_id' : target_ids[problem_id],
             'robot_id'  : robot_id,
+            'start_time' : start_time,
+            'total_time' : new Date().getTime() - start_time,
             'examples'  : examples,
             'all_examples' : all_examples,
             'examples_used' : Object.keys(examples).length,
@@ -340,13 +346,16 @@ function make_working_grid(){
 
             // on click update my background to match
             $(box).click(function(){
+                const rel_time = new Date().getTime() - start_time;
                 if (examples[[coord_i, coord_j]] == undefined){
                     // the empty tile should have a canonicalized 'coloridx' of 0
                     let color_idx_empty_safe = shape_idx == 2 ? 0 : color_idx;
                     examples[[coord_i, coord_j]] = [shape_idx, color_idx_empty_safe];
+                    all_examples.push(`${[coord_i,coord_j]} ${[shape_idx, color_idx_empty_safe]} ${rel_time}`)
                     render_plant();
                 } else {
                     delete examples[[coord_i, coord_j]];
+                    all_examples.push(`${[coord_i,coord_j]} delete ${rel_time}`)
                     render_plant();
                 }
 
