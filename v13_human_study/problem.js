@@ -37,7 +37,8 @@ var target_ids;
 var robot_id;
 var disambiguous_size = 0;
 
-const experiment_batch = "batch_3";
+//const experiment_batch = "batch_3";
+const experiment_batch = "batch_debug";
 
 // clear a grid canvas
 function clear_grid_canvas(grid_canv_name){
@@ -526,22 +527,39 @@ function render_plant(){
 
 };
 
+// function run_l0() {
+//     let l0_candidates = Array.from(L0(examples));
+//     let sorted_cands = l0_candidates.sort(function(a,b){
+//         return random_shape_order[a] - random_shape_order[b];
+//     });
+//     render_l_results(sorted_cands, 0);
+// }
 function run_l0() {
-    let l0_candidates = Array.from(L0(examples));
-    let sorted_cands = l0_candidates.sort(function(a,b){
-        return random_shape_order[a] - random_shape_order[b];
-    });
-    render_l_results(sorted_cands, 0);
+    // let l1_candidates = L1(examples);
+    setTimeout(() => {
+        // make timing consistent
+        let l0_candidates = Array.from(L0(examples));
+        var l1_candidates = L1(examples);
+        let sorted_cands = l0_candidates.sort(function(a,b){
+            return random_shape_order[a] - random_shape_order[b];
+        });
+        render_l_results(sorted_cands, 0);   
+        $("#L0").css("background-image", 'url(assets/robot_0.png)');
+
+    }, 1000);
+    // thinking robot
+    $("#L0").css("background-image", 'url(assets/robot_0_thinking.png)');
 }
 
 function run_l1() {
     // let l1_candidates = L1(examples);
     setTimeout(() => {
+        let l0_candidates = Array.from(L0(examples));
         var l1_candidates = L1(examples);
         render_l_results(l1_candidates, 1);
         $("#L1").css("background-image", 'url(assets/robot.png)');
 
-    }, 100);
+    }, 1000);
     // thinking robot
     $("#L1").css("background-image", 'url(assets/robot_thinking.png)');
 }
